@@ -607,6 +607,7 @@ function main() {
                 gamemode = 'big';
                 slotmodule.once("payend", function () {
                     slotmodule.setLotMode(1)
+                    changeBonusSeg()
                 });
                 slotmodule.setMaxbet(3);
                 break;
