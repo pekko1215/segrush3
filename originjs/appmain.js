@@ -791,8 +791,15 @@ function main() {
         })
     })
 
-    $("img").on("touchstart",()=>{
+    $("img").on("touchstart", () => {
         slotmodule.almighty()
+    })
+    $("#auto").on("click", () => {
+        (function(e) {
+            $("img").one("touchstart click",function(){
+                clearInterval(e)
+            })
+        })(setInterval(slotmodule.almighty, 100))
     })
 
     function segHitEffect() {
@@ -938,7 +945,7 @@ function main() {
                             })()
                             sounder.playSound("athit", false, () => {
                                 registBonus({
-                                    bonus: "AT"+hit,
+                                    bonus: "AT" + hit,
                                     game: playcount
                                 })
                                 slotmodule.resume();
