@@ -10,40 +10,40 @@ YakuData.push({
 
 YakuData.push({
     name: "リプレイ",
-    pay: [0, 3, 15]
+    pay: [0, 0, 15]
 })
 
 YakuData.push({
     name: "ベル",
-    pay: [10, 10, 0]
+    pay: [9, 13, 0]
 })
 
 YakuData.push({
-    name: "スイカ",
-    pay: [15, 15, 0]
+    name: "ベル揃い",
+    pay: [0, 0, 0]
 })
 
 YakuData.push({
-    name: "チェリー",
-    pay: [2, 2, 0]
-})
-
-YakuData.push({
-    name: "チェリー",
-    pay: [4, 4, 0]
-})
-
-YakuData.push({
-    name: "BIG",
-    pay: [15, 0, 0]
-})
-
-YakuData.push({
-    name: "BIG",
-    pay: [15, 0, 0]
+    name: "3揃い",
+    pay: [9, 0, 0]
 })
 
 YakuData.push({
     name: "REG",
-    pay: [15, 0, 0]
+    pay: [0, 0, 0]
+})
+
+YakuData.push({
+    name: "チャンス目B",
+    pay: [1, 0, 0]
+})
+
+YakuData.push({
+    name: "チャンス目C",
+    pay: [1, 0, 0]
+})
+
+YakuData.push({
+    name: "JACGAME",
+    pay: [0, 0, 15]
 })

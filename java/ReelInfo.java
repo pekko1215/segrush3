@@ -85,6 +85,7 @@ public class ReelInfo
 				for (int j=1; j<tableNum23Index[i].length; j++)
 				{
 					tableNum23Index[i][j] = in.readShort();
+					System.out.print(""+tableNum23Index[i][j]+",");
 				}
 			}
 			
@@ -95,8 +96,9 @@ public class ReelInfo
 				in.read(tableNum23[i]);
 			}
 			tableNum23NumIndex = new short[controlCount*6+1];
-			for (int i=1; i < controlCount*6+1; i++)
+			for (int i=1; i < controlCount*6+1; i++){
 				tableNum23NumIndex[i] = in.readShort();
+			}
 			tableNum23Num = new byte[tableNum23NumIndex[controlCount*6]*tableNum23NumSize];
 			in.read(tableNum23Num);
 		}

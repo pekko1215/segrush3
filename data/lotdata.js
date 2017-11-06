@@ -1,76 +1,136 @@
 /**
  * Created by pekko1215 on 2017/07/24.
  */
-Array.prototype.select = function(key,value){
-    return this.find(function(o){
-        return key in o && o[key]==value
+Array.prototype.select = function(key, value) {
+    return this.find(function(o) {
+        return key in o && o[key] == value
     })
 }
 
-var lotdata = Array(6).fill(0).map(function(){
+var lotdata = Array(6).fill(0).map(function() {
     return {
-        normal: [
-            {   name:"リプレイ",
-                value:1/7.7},
-            {   name:"ベル",
-                value:1/10},
-            {   name:"スイカ",
-                value:1/64},
-            {   name:"チェリー",
-                value:1/32},
-            {   name:"BIG",
-                value:1/240},
-            {   name:"REG",
-                value:1/299}
-        ],
-        "big":[
-            {
-                name:"JACIN",
-                value:1/4.7
+        normal: [{
+                name: "リプレイ",
+                value: 1 / 7.7
             },
             {
-                name:"ベル",
-                value:1/2
-            },
-            {
-                name:"スイカ",
-                value:1/2
+                name: "REG",
+                value: 1 / 8192
             }
         ],
-        "jac":[
+        "big": [{
+                name: "JACIN",
+                value: 1 / 4.7
+            },
             {
-                name:"JACGAME",
-                value:1
+                name: "ベル",
+                value: 1 / 2
+            },
+            {
+                name: "スイカ",
+                value: 1 / 2
             }
-        ]
+        ],
+        "jac": [{
+            name: "JACGAME",
+            value: 1
+        }]
     }
 })
 
-//設定1
-lotdata[0].normal.select("name","ベル").value = 1/11;
-lotdata[0].normal.select("name","BIG").value = 1/289;
-lotdata[0].normal.select("name","REG").value = 1/325;
 
-//設定1
-lotdata[1].normal.select("name","ベル").value = 1/11;
-lotdata[1].normal.select("name","BIG").value = 1/279;
-lotdata[1].normal.select("name","REG").value = 1/311;
 
-//設定3
-lotdata[2].normal.select("name","ベル").value = 1/11;
-lotdata[2].normal.select("name","BIG").value = 1/260;
-lotdata[2].normal.select("name","REG").value = 1/305;
+var fallLot = 32
 
-//設定4
-lotdata[3].normal.select("name","ベル").value = 1/10;
-lotdata[3].normal.select("name","BIG").value = 1/258;
-lotdata[3].normal.select("name","REG").value = 1/301;
+var modeTable = [{
+    name: "通常A",
+    min: 64,
+    max: 32,
+    tenjo: 64
+}, {
+    name: "通常B",
+    min: 48,
+    max: 32,
+    tenjo: 64
+}, {
+    name: "チャンスA",
+    min: 8,
+    max: 4,
+    tenjo: 8,
+    fall:3
+}, {
+    name: "チャンスB",
+    min: 4,
+    max: 1,
+    tenjo: 8,
+    fall:3
+}]
 
-//設定5
-lotdata[4].normal.select("name","ベル").value = 1/10;
-lotdata[4].normal.select("name","BIG").value = 1/250;
-lotdata[4].normal.select("name","REG").value = 1/299;
+var modeChangeTable = [
+    [74, 16, 10, 0], //A
+    [8, 82, 10, 0], //B
+    [70, 30, 00, 0], //CA
+    [0, 0, 70, 30] //CB
+]
 
-//設定6
-lotdata[5].normal.select("name","ベル").value = 1/9;
+var modeUpTable = [
+    [10,10],
+    [25,25],
+    [25,25]
+]
 
+var atTable = [{
+    at:33,
+    lot:9800
+},{
+    at:111,
+    lot:75
+},{
+    at:222,
+    lot:50
+},{
+    at:333,
+    lot:50
+},{
+    at:444,
+    lot:5
+},{
+    at:555,
+    lot:20
+}]
+
+atTable.lot = function(){
+    var r = rand(10000);
+    return this.find((d)=>{
+        r-=d.lot;
+        return r<0
+    }).at
+}
+
+var ATLotMode = rand(2);
+
+function atLotter(mode) {
+    this.mode = mode;
+    this.lotcount = 0;
+}
+
+atLotter.prototype.lot = function(){
+    var l = modeTable[this.mode]
+    var r = rand(l.min - l.max)+l.max;
+    this.lotcount++
+    if(!rand(r) || l.tenjo==this.lotcount){
+        l.tenjo = 0
+        return true;
+    }else{
+        if(!rand(fallLot)||(l.fall&&!rand(l.fall))){
+            r = rand(100);
+            var idx = modeChangeTable[this.mode].findIndex((e)=>{
+                r -= e;
+                return r<0
+            })
+            if(this.mode!=idx){this.lotcount = 0;}
+            this.mode = idx
+        }
+        return false;
+    }
+}

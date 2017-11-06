@@ -2,7 +2,7 @@ function SlotModuleMk2() {
     var width = paneldata.width;
     var height = paneldata.height;
     this.LOTMODE = {};
-    ["NORMAL", "BIG", "JAC"].forEach(function (d, i) {
+    ["NORMAL", "BIG", "JAC"].forEach(function(d, i) {
         this.LOTMODE[d] = i
     }, this)
 
@@ -11,21 +11,21 @@ function SlotModuleMk2() {
     this.events = {};
     var backflash;
     // レンダラーを作る
-    var renderer = PIXI.autoDetectRenderer(width, height,{
-        backgroundColor : paneldata.reel.background
+    var renderer = PIXI.autoDetectRenderer(width, height, {
+        backgroundColor: paneldata.reel.background
     });
     // レンダラーのviewをDOMに追加する
     console.log(paneldata)
     document.getElementById("pixiview").appendChild(renderer.view);
 
-    var stopButtonSmart = function (e) {
+    var stopButtonSmart = function(e) {
         var rect = e.target.getBoundingClientRect();
         pushScreen({
             x: e.changedTouches[0].clientX - rect.left,
             y: e.changedTouches[0].clientY - rect.top
         })
     }
-    var stopButtonPC = function (e) {
+    var stopButtonPC = function(e) {
         pushScreen({
             x: e.clientX - e.target.getBoundingClientRect().left,
             y: e.clientY - e.target.getBoundingClientRect().top
@@ -52,18 +52,23 @@ function SlotModuleMk2() {
     var leverkeyListener = keyboard(keyconfig.lever);
     var allkeyListener = keyboard(keyconfig.all);
 
-    leftkeyListener.press = function () {
+    leftkeyListener.press = function() {
         slotmodule.stopReel(0)
     }
-    centerkeyListener.press = function () {
+    centerkeyListener.press = function() {
         slotmodule.stopReel(1);
     }
-    rightkeyListener.press = function () {
+    rightkeyListener.press = function() {
         slotmodule.stopReel(2);
     }
-    allkeyListener.press = function () {
+    allkeyListener.press = function() {
+        var zyunjo = slotmodule.zyunjo || [1, 2, 3]
+        zyunjo = [...zyunjo]
         for (var i = 0; i < 3; i++) {
-            if (slotmodule.stopReel(i)) {
+            if (slotmodule.stopReel(zyunjo.indexOf(i+1))) {
+                if (i == 2) {
+                    slotmodule.zyunjo = null
+                }
                 return;
             }
         }
@@ -76,23 +81,24 @@ function SlotModuleMk2() {
             return;
         }
     }
-    leverkeyListener.press = function () {
+    leverkeyListener.press = function() {
         slotmodule.leverON()
     }
-    betkeyListener.press = function () {
+    betkeyListener.press = function() {
         slotmodule.betCoin(3)
     }
+
 
 
     this.almighty = allkeyListener.press
 
     var spilitas = [];
     var reelChips = []; //リールチップ単体のオブジェクトを入れる配列
-    var reelChipData = {blank: paneldata.reel.blank}; //リールチップ共通の情報を記憶
+    var reelChipData = { blank: paneldata.reel.blank }; //リールチップ共通の情報を記憶
     PIXI.loader.add("reelchip", "img/reelchip.json")
-        .load(function (loader, resources) {
+        .load(function(loader, resources) {
             var SpriteKeys = [];
-            Object.keys(resources.reelchip.textures).forEach(function (key, i) {
+            Object.keys(resources.reelchip.textures).forEach(function(key, i) {
                 // spilita.push(PIXI.Sprite.fromFrame(key))
                 SpriteKeys.push(key)
                 if (i == 0) {
@@ -109,7 +115,7 @@ function SlotModuleMk2() {
                     reelChips[reel].push(obj)
                 }
             }
-            slotmodule.emit("resourceLoaded",{stage:stage})
+            slotmodule.emit("resourceLoaded", { stage: stage })
             slotmodule.initFlash()
         })
     // アニメーション関数を定義する
@@ -121,7 +127,7 @@ function SlotModuleMk2() {
         ],
         reelSlipLength: [0, 0, 0],
         controlCode: 0,
-        maxbet:3,
+        maxbet: 3,
         playingStatus: "betwait",
         betcoin: 3,
         lotmode: this.LOTMODE.NORMAL,
@@ -130,10 +136,11 @@ function SlotModuleMk2() {
         oldtime: new Date()
     }
     frame = 0
+
     function animate() {
         requestAnimationFrame(animate); // 次の描画タイミングでanimateを呼び出す
         //ここにかく
-        reelChips.forEach(function (reelarray, i) {
+        reelChips.forEach(function(reelarray, i) {
             switch (playControlData.reelStatus[i]) {
                 case 'move':
                     reelMove(i, control.reel.speed);
@@ -153,12 +160,13 @@ function SlotModuleMk2() {
         renderer.render(stage); // 描画する
     }
 
-    this.leverON = function () {
+    this.leverON = function() {
+        if (this.freezeFlag) { return }
         if (playControlData.playingStatus != "beted") {
             return false;
         }
         playControlData.controlCode = slotmodule.emit("lot")[0];
-        if(typeof playControlData.controlCode === "string"){
+        if (typeof playControlData.controlCode === "string") {
             playControlData.controlCode = control.code.indexOf(playControlData.controlCode)
         }
         slotmodule.emit("leveron")
@@ -169,7 +177,7 @@ function SlotModuleMk2() {
     var oldyaku;
 
 
-    this.UpdatePlayingStatus = function () {
+    this.UpdatePlayingStatus = function() {
         if (playControlData.wait > 0) {
             var deltaTime = new Date() - playControlData.oldtime;
             playControlData.wait -= deltaTime;
@@ -177,6 +185,7 @@ function SlotModuleMk2() {
                 playControlData.wait = 0;
             playControlData.oldtime = new Date()
         }
+        if (this.freezeFlag) { return }
         switch (playControlData.playingStatus) {
             case 'betwait':
                 break;
@@ -204,23 +213,23 @@ function SlotModuleMk2() {
             case 'allreelstop':
                 playControlData.playingStatus = "allreelstopwait";
                 oldyaku = this.getHitYakus();
-                oldyaku.stopend = function(){
+                oldyaku.stopend = function() {
                     playControlData.playingStatus = "pay";
                 }
-                this.emit("allreelstop",oldyaku);
+                this.emit("allreelstop", oldyaku);
                 break;
             case "allreelstopwait":
                 break;
             case "pay":
                 playControlData.playingStatus = "paying";
-                this.emit("pay",{
-                    hityaku:oldyaku,
-                    payend:function () {
+                this.emit("pay", {
+                    hityaku: oldyaku,
+                    payend: function() {
                         playControlData.playingStatus = "betwait";
                         slotmodule.emit("payend")
                         playControlData.betcoin = 0
                     },
-                    replay:function(){
+                    replay: function() {
                         playControlData.playingStatus = "beted"
                     }
                 })
@@ -231,18 +240,19 @@ function SlotModuleMk2() {
     }
 
     function reelMove(reel, speed) {
-        reelChips[reel].forEach(function (chip) {
+        reelChips[reel].forEach(function(chip) {
             chip.position.y += speed;
             if (chip.position.y > paneldata.reel.height) {
                 chip.position.y = chip.position.y - reelChipData.height * reelControl.controlData.reelLength
             }
-            if ((chip.position.y < -reelChipData.height * reelControl.controlData.reelLength ) && speed < 0) {
+            if ((chip.position.y < -reelChipData.height * reelControl.controlData.reelLength) && speed < 0) {
                 chip.position.y = reelChipData.height
             }
         })
     }
 
-    this.betCoin = function (coin) {
+    this.betCoin = function(coin) {
+        if (this.freezeFlag) { return }
         if (playControlData.playingStatus != "betwait") {
             if (playControlData.playingStatus != "beted" || playControlData.betcoin == playControlData.maxbet) {
                 return false;
@@ -255,25 +265,29 @@ function SlotModuleMk2() {
         }
         if (playControlData.betcoin >= control.minbet) {
             playControlData.playingStatus = "beting"
-            slotmodule.emit("bet", {coin: coin,betend:function(){
-                playControlData.playingStatus = "beted"
-            }})
+            slotmodule.emit("bet", {
+                coin: coin,
+                betend: function() {
+                    playControlData.playingStatus = "beted"
+                }
+            })
         }
     }
 
     function getMoveingCount() {
-        return playControlData.reelStatus.filter(function (stat) {
+        return playControlData.reelStatus.filter(function(stat) {
             return stat == "move"
         }).length
     }
 
-    this.setPlayControlData = function(data){
+    this.setPlayControlData = function(data) {
         this.playControlData = data;
     }
 
-    this.getReelChips = function () {
+    this.getReelChips = function() {
         return reelChips
     }
+
     function reelSlip(reel, speed) {
         if (playControlData.reelStatus[reel] == "sliping") {
             if (playControlData.reelSlipLength[reel] > speed) {
@@ -292,8 +306,9 @@ function SlotModuleMk2() {
 
     // 次のアニメーションフレームでanimate()を呼び出してもらう
     requestAnimationFrame(animate);
-    this.stopReel = function (reel) {
-        if (playControlData.reelStatus[reel] != 'move' || playControlData.reelStatus.some(function (d) {
+    this.stopReel = function(reel) {
+        if (this.freezeFlag) { return }
+        if (playControlData.reelStatus[reel] != 'move' || playControlData.reelStatus.some(function(d) {
                 return d == "sliping"
             })) {
             return false;
@@ -302,15 +317,15 @@ function SlotModuleMk2() {
         if (slip < 0)
             slip = reelChips[reel].length + slip
         this.reelSlipStart(reel, slip);
-        this.emit("reelstop",{
-            count:getMoveingCount(),
-            reel:reel
+        this.emit("reelstop", {
+            count: getMoveingCount(),
+            reel: reel
         });
         playControlData.reelStatus[reel] = "sliping";
         return true;
     }
 
-    this.getPlayControlData = function () {
+    this.getPlayControlData = function() {
         return playControlData
     }
 
@@ -328,13 +343,21 @@ function SlotModuleMk2() {
         }
     }
 
-    this.getReelPos = function (reel) {
-        return reelChips[reel].findIndex(function (chip) {
+    this.freeze = function() {
+        this.freezeFlag = true;
+    }
+
+    this.resume = function() {
+        this.freezeFlag = false;
+    }
+
+    this.getReelPos = function(reel) {
+        return reelChips[reel].findIndex(function(chip) {
             return chip.position.y <= 0 && -chip.position.y < reelChipData.height
         })
     }
 
-    this.getReelPosStrict = function (reel) {
+    this.getReelPosStrict = function(reel) {
         var reelpos = this.getReelPos(reel);
         return {
             pos: reelpos,
@@ -342,7 +365,7 @@ function SlotModuleMk2() {
         }
     }
 
-    this.reelSlipStart = function (reel, slips) {
+    this.reelSlipStart = function(reel, slips) {
         playControlData.reelSlipLength[reel] = -this.getReelPosStrict(reel).gap + reelChipData.height * slips;
         if (playControlData.reelSlipLength[reel] < 0) {
             console.log("闇が深いコード");
@@ -350,11 +373,11 @@ function SlotModuleMk2() {
         }
     }
 
-    this.getReelChar = function (reel, pos) {
+    this.getReelChar = function(reel, pos) {
         return reelControl.controlData.reelArray[reel][pos]
     }
 
-    this.getHitYakus = function () {
+    this.getHitYakus = function() {
         var lines = [];
         var hitcount = 0;
         var pay = 0;
@@ -362,9 +385,9 @@ function SlotModuleMk2() {
         for (i = 0; i < reelControl.controlData.maxLine; i++) {
             lines[i] = [];
             var matrix = new Array(3);
-            for(var m=0;m<3;m++){
+            for (var m = 0; m < 3; m++) {
                 matrix[m] = [];
-                for(var g=0;g<3;g++){
+                for (var g = 0; g < 3; g++) {
                     matrix[m][g] = 0;
                 }
             }
@@ -377,20 +400,21 @@ function SlotModuleMk2() {
                 matrix[reelControl.controlData.betLine[i][j]][j] = 1
                 line_char.push(this.getReelChar(j, (this.getReelPos(j) + reelControl.controlData.betLine[i][j]) % reelControl.controlData.reelLength))
             }
-            reelControl.controlData.yakuList.forEach(function (d, j) {
+            reelControl.controlData.yakuList.forEach(function(d, j) {
                 var yakuarray = new Array(3).fill(0);
-                yakuarray[2] = d & 0xF;
-                d = d >> 4;
-                var yakumode = d & 0xF;
-                d = d >> 4;
+                // console.log(d)
                 yakuarray[0] = d & 0xF;
                 d = d >> 4;
                 yakuarray[1] = d & 0xF;
                 d = d >> 4;
-                if (yakuarray.every(function (d, i) {
+                yakuarray[2] = d & 0xF;
+                d = d >> 4;
+                var yakumode = d & 0xF;
+                d = d >> 4;
+                if (yakuarray.every(function(d, i) {
                         return (line_char[i] == d || d == 0xF) && (yakumode & (1 << playControlData.lotmode)) != 0
                     })) {
-                    lines[i].push(YakuData[j + 1])//YakuDataの0ははずれ
+                    lines[i].push(YakuData[j + 1]) //YakuDataの0ははずれ
                     hityaku.push(YakuData[j + 1]);
                     hityaku[hityaku.length - 1].line = i;
                     hityaku[hityaku.length - 1].matrix = matrix
@@ -404,8 +428,8 @@ function SlotModuleMk2() {
             }
         }
 
-        if(pay>control.maxpay[playControlData.betcoin-1]){
-            pay = control.maxpay[playControlData.betcoin-1]
+        if (pay > control.maxpay[playControlData.betcoin - 1]) {
+            pay = control.maxpay[playControlData.betcoin - 1]
         }
 
         return {
@@ -416,7 +440,7 @@ function SlotModuleMk2() {
         }
     }
 
-    this.on = function (key, callback) {
+    this.on = function(key, callback) {
         if (!(key in this.events)) {
             this.events[key] = [];
         }
@@ -425,7 +449,7 @@ function SlotModuleMk2() {
             event: callback
         });
     }
-    this.once = function (key, callback) {
+    this.once = function(key, callback) {
         if (!(key in this.events)) {
             this.events[key] = [];
         }
@@ -434,14 +458,14 @@ function SlotModuleMk2() {
             event: callback
         });
     }
-    this.emit = function (key, param) {
+    this.emit = function(key, param) {
         var emitter = [];
         if (param === undefined) {
             param = {};
         }
         param.playControlData = this.getPlayControlData();
         if (key in this.events) {
-            this.events[key].forEach(function (call, i) {
+            this.events[key].forEach(function(call, i) {
                 emitter.push(call.event(param));
                 if (call.once) {
                     delete this[i]
@@ -451,13 +475,13 @@ function SlotModuleMk2() {
         return emitter
     }
 
-    this.initFlash = function () {
+    this.initFlash = function() {
         backflash = new PIXI.Graphics();
         stage.addChildAt(backflash, 0)
-        this.setFlash(flashdata.default,1)
+        this.setFlash(flashdata.default, 1)
     }
 
-    this.drawFlash = function () {
+    this.drawFlash = function() {
         if (playControlData.flashReservation.length == 0) {
             return;
         }
@@ -476,12 +500,12 @@ function SlotModuleMk2() {
 
                     }
                 }
-                reelChips[x][(charindex+y)%reelControl.controlData.reelLength].tint = flash.front[y][x].color;
+                reelChips[x][(charindex + y) % reelControl.controlData.reelLength].tint = flash.front[y][x].color;
             }
         }
         playControlData.flashReservation[0].timer--;
         if (playControlData.flashReservation[0].timer < 0) {
-            playControlData.flashReservation[0].callback&&playControlData.flashReservation[0].callback();
+            playControlData.flashReservation[0].callback && playControlData.flashReservation[0].callback();
             playControlData.flashReservation.shift();
             for (var reel = 0; reel < 3; reel++) {
                 for (var p = 0; p < reelChips[reel].length; p++) {
@@ -491,7 +515,7 @@ function SlotModuleMk2() {
         }
 
     }
-    this.setFlash = function (flash, timer, callback) {
+    this.setFlash = function(flash, timer, callback) {
         flash || (flash = paneldata.reel.defaultFrash);
         playControlData.flashReservation.push({
             flash: flash,
@@ -499,17 +523,17 @@ function SlotModuleMk2() {
             callback: callback
         })
     }
-    this.clearFlashReservation = function () {
+    this.clearFlashReservation = function() {
         playControlData.flashReservation = [];
-        this.setFlash(flashdata.default,1)
+        this.setFlash(flashdata.default, 1)
 
     }
 
-    this.setLotMode = function(e){
+    this.setLotMode = function(e) {
         playControlData.lotmode = e;
     }
 
-    this.setMaxbet = function(e){
+    this.setMaxbet = function(e) {
         playControlData.maxbet = e
     }
 }

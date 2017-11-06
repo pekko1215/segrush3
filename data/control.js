@@ -1,3 +1,8 @@
+
+function rand(m) {
+    return Math.floor(Math.random() * m);
+}
+
 var control = {
 	reel:{
 		speed:37,
@@ -9,19 +14,20 @@ var control = {
 	code:[
 		"はずれ",
 		"リプレイ",
-		"ベル",
-		"スイカ",
-		"チェリー",
-		"BIG1",
-		"BIG2",
-        "BIG3",
-        "REG1",
-		"REG2",
-		"BIGスイカ",
-        "JACIN1",
-        "JACIN2",
-        "JACIN3",
-        "JACGAME"
+		"共通ベル",
+		"3揃い",
+		"チャンス目A",
+        "チャンス目B",
+        "チャンス目C",
+		"REG",
+		"押し順ベル1",
+		"押し順ベル2",
+        "押し順ベル3",
+        "押し順ベル4",
+		"押し順ベル5",
+		"押し順ベル6",
+		"JACGAME",
+		"リーチ目"
 		],
-	maxpay:[15,15,15]
+	maxpay:[15,15,9]
 }

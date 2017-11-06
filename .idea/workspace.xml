@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="1ec7bd8f-b693-48a4-8f1e-322d9205a56d" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/index.html" afterPath="$PROJECT_DIR$/index.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/img/panel.png" afterPath="$PROJECT_DIR$/img/panel.png" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
@@ -239,7 +239,7 @@
   </component>
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../bitaoshifrends" />
     <property name="HbShouldOpenHtmlAsHb" value="" />
     <property name="nodejs_interpreter_path" value="C:/Program Files/nodejs/node" />
     <property name="settings.editor.selected.configurable" value="Settings.JavaScript" />
@@ -348,7 +348,7 @@
       <workItem from="1505044264778" duration="599000" />
       <workItem from="1505574351808" duration="10000" />
       <workItem from="1505626082995" duration="11431000" />
-      <workItem from="1505646352250" duration="145000" />
+      <workItem from="1505646352250" duration="775000" />
     </task>
     <task id="LOCAL-00001" summary="dwada">
       <created>1504152181629</created>
@@ -389,10 +389,10 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="94534000" />
+    <option name="totallyTimeSpent" value="95164000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="793" y="0" width="814" height="867" extended-state="1" />
+    <frame x="793" y="0" width="814" height="867" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.21303259" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
