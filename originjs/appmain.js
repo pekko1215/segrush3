@@ -791,6 +791,10 @@ function main() {
         })
     })
 
+    $("img").on("touchstart",()=>{
+        slotmodule.almighty()
+    })
+
     function segHitEffect() {
         var segnum = [];
         (function() {
