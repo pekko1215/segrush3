@@ -505,8 +505,8 @@ function main() {
             outcoin: outcoin,
             playcount: playcount,
             allplaycount: allplaycount,
-            name: "ビーナス3",
-            id: "venus3"
+            name: "セグラッシュ3",
+            id: "segrush3"
         }
     }
 
