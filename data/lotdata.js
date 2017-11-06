@@ -56,13 +56,13 @@ var modeTable = [{
     name: "チャンスA",
     min: 8,
     max: 4,
-    tenjo: 8,
+    tenjo: 32,
     fall:3
 }, {
     name: "チャンスB",
     min: 4,
     max: 1,
-    tenjo: 8,
+    tenjo: 32,
     fall:3
 }]
 
@@ -118,8 +118,8 @@ atLotter.prototype.lot = function(){
     var l = modeTable[this.mode]
     var r = rand(l.min - l.max)+l.max;
     this.lotcount++
-    if(!rand(r) || l.tenjo==this.lotcount){
-        l.tenjo = 0
+    if(!rand(r) || l.tenjo<this.lotcount){
+        this.lotcount = 0
         return true;
     }else{
         if(!rand(fallLot)||(l.fall&&!rand(l.fall))){

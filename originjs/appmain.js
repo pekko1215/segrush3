@@ -481,20 +481,24 @@ function main() {
             allplaycount++;
         } else {
             if (playcount != 0) {
-                bonuscounter.history.push({
+                registBonus({
                     bonus: gamemode,
                     game: playcount
                 })
-                if (gamemode in bonuscounter.count) {
-                    bonuscounter.count[gamemode]++;
-                } else {
-                    bonuscounter.count[gamemode] = 1;
-                }
-                playcount = 0;
             }
         }
         changeCredit(0)
     })
+
+    function registBonus(type) {
+        bonuscounter.history.push(type)
+        if (gamemode in bonuscounter.count) {
+            bonuscounter.count[gamemode]++;
+        } else {
+            bonuscounter.count[gamemode] = 1;
+        }
+        playcount = 0;
+    }
 
     function stringifySaveData() {
         return {
@@ -907,6 +911,7 @@ function main() {
                 slotmodule.freeze();
                 segments.effectseg.setSegments(atGame)
                 var defat = atTable.lot();
+                var hit = defat
                 var start = atGame + 33
                 atGame += defat
                 defat -= 33;
@@ -928,6 +933,10 @@ function main() {
                                 })
                             })()
                             sounder.playSound("athit", false, () => {
+                                registBonus({
+                                    bonus: "AT"+hit,
+                                    game: playcount
+                                })
                                 slotmodule.resume();
                                 isAT = true;
                                 slotmodule.clearFlashReservation();
